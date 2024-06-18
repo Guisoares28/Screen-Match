@@ -8,10 +8,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import com.example.screenMatch.Models.DadosEpisodeos;
-import com.example.screenMatch.Models.DadosSerie;
-import com.example.screenMatch.Models.DadosTemporadas;
-import com.example.screenMatch.Models.Episodio;
+import com.example.screenMatch.Models.*;
 import com.example.screenMatch.Service.ConsumoAPI;
 import com.example.screenMatch.Service.ConverteDados;
 
@@ -43,7 +40,12 @@ public class Principal {
 	}
 
 	private void mostrarSeriesPesquisadas() {
-		seriesPesquisadas.stream()
+		List<Serie> series = new ArrayList<>();
+		series = seriesPesquisadas.stream()
+				.map(s -> new Serie(s))
+				.collect(Collectors.toList());
+		series.stream()
+				.sorted(Comparator.comparing(Serie::getAvaliacao).reversed())
 				.forEach(System.out::println);
 	}
 
@@ -52,16 +54,13 @@ public class Principal {
 		System.out.println("Qual serie deseja pesquisar: ");
 		String serie = scanner.nextLine();
 		String serieEncoder = "";
-		try {
-			serieEncoder = URLEncoder.encode(serie, StandardCharsets.UTF_8.toString());
-		} catch (UnsupportedEncodingException e) {
-			throw new RuntimeException(e);
-		}
-		ConsumoAPI consumoApi = new ConsumoAPI();
+        serieEncoder = URLEncoder.encode(serie, StandardCharsets.UTF_8);
+        ConsumoAPI consumoApi = new ConsumoAPI();
 		ConverteDados converteDados = new ConverteDados();
 		String json = consumoApi.obterDados(ENDERECO + serieEncoder + API_KEY);
 		DadosSerie dadosSerie = converteDados.converteDados(json, DadosSerie.class);
+		Serie newSerie = new Serie(dadosSerie);
 		seriesPesquisadas.add(dadosSerie);
-		System.out.println(dadosSerie);
+		System.out.println(newSerie);
 	}
 }

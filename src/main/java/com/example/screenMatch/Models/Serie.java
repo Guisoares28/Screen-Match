@@ -1,12 +1,10 @@
 package com.example.screenMatch.Models;
 
-import com.example.screenMatch.Service.ConsultaChatGPT;
+import com.example.screenMatch.Service.Tradutor.ConsumoTradutor;
 
 import java.util.OptionalDouble;
 
 public class Serie {
-    private ConsultaChatGPT tradutor = new ConsultaChatGPT();
-
     private String titulo;
     private Integer totalTemporadas;
     private Double avaliacao;
@@ -14,6 +12,7 @@ public class Serie {
     private String atores;
     private String poster;
     private String sinopse;
+    private ConsumoTradutor consumoTradutor = new ConsumoTradutor();
 
     public Serie(DadosSerie dadosSerie) {
         this.titulo = dadosSerie.titulo();
@@ -22,7 +21,7 @@ public class Serie {
         this.genero = Genero.fromString(dadosSerie.genero().split(",")[0].trim());
         this.atores = dadosSerie.atores();
         this.poster = dadosSerie.poster();
-        this.sinopse = tradutor.obterTraducao(dadosSerie.sinopse());
+        this.sinopse = consumoTradutor.consumoTradutor(dadosSerie.sinopse().trim());
     }
 
     public String getTitulo() {
